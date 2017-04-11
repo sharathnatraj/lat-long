@@ -28,14 +28,13 @@ class LatLongAction {
     public static void main(String[] args) throws ParseException, IOException {
 
 
-
-        String csvfile = "/D:/Sprint24/TestRun/Provider Location Details.csv";
-        String combCVLAndPLAirport = "/D:/Sprint24/TestRun/Combined CVL Location Provider Location Details Airport.csv";
-        String combCVLAndPLNonAirport = "/D:/Sprint24/TestRun/Combined CVL Location Provider Location Details NonAirport.csv";
-        String SabreData="/D:/Sprint24/TestRun/DataToSabre.csv";
-        String csvfileSabre = "/D:/Sprint24/TestRun/AL Total Locations.csv";
+        String csvfile = "/D:/CVLData/CVLOutput/Provider Location Details.csv";
+        String combCVLAndPLAirport = "/D:/CVLData/CVLOutput/Combined CVL Location Provider Location Details Airport.csv";
+        String combCVLAndPLNonAirport = "/D:/CVLData/CVLOutput/Combined CVL Location Provider Location Details NonAirport.csv";
+        String SabreData="/D:/CVLData/CVLOutput/DataToSabre.csv";
+        String csvfileSabre = "/D:/CVLData/CVLInput/Vendor Locations.csv";
         JSONParser parser = new JSONParser();
-        Object object = parser.parse(new FileReader("/D:/Sprint24/Data/json input.json"));
+        Object object = parser.parse(new FileReader("/D:/CVLData/CVLInput/Vendor unmatched data.json"));
 //        JSONObject jsonObject = (JSONObject) object;
 
      //Trying to parse the entire file obtained
@@ -84,10 +83,11 @@ class LatLongAction {
                 StringBuilder providerDataAddress=new StringBuilder();
                 List<CvlLocDataList> CvlLocDataList=locObj.getCvlLocDataList();
                 //String providerDataAddress=locObj.getProviderData().getStreetAddress().concat(locObj.getProviderData().getCityName()).concat(locObj.getProviderData().getCountryCode());
+                String providerLocationName = locObj.getProviderData().getLocationName();
                 String providerStreetAddress=locObj.getProviderData().getStreetAddress();
                 String providerCity=locObj.getProviderData().getCityName();
                 String providerCountry=locObj.getProviderData().getCountryCode();
-                providerDataAddress.append(providerStreetAddress).append(",").append(providerCity).append(",").append(providerCountry);
+                providerDataAddress.append(providerLocationName).append(",").append(providerStreetAddress).append(",").append(providerCity).append(",").append(providerCountry);
                 Cordinates proCordinates=getCorrectLatLong(providerDataAddress.toString());
                 proLat=proCordinates.getLatitude();
                 proLong=proCordinates.getLongitude();
@@ -131,10 +131,11 @@ class LatLongAction {
                     double diffInRawCVLDataAndRawProviderData;
                     double cvlLat,cvlLong;
                     StringBuilder Address=new StringBuilder();
+                    String locationName=cvlObj.getCarVendorLocationName();
                     String streetAddress=cvlObj.getStreetAddress();
                     String city=cvlObj.getCityName();
                     String country=cvlObj.getIsoCountryCode();
-                    Address.append(streetAddress).append(",").append(city).append(",").append(country);
+                    Address.append(locationName).append(",").append(streetAddress).append(",").append(city).append(",").append(country);
                     Cordinates CVLCordinates=getCorrectLatLong(Address.toString());
                     cvlLat=CVLCordinates.getLatitude();
                     cvlLong=CVLCordinates.getLongitude();
