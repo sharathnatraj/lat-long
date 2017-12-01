@@ -9,6 +9,7 @@ public class SabreData {
     private String geoLevel;
     private String phoneticCode;
     private String timeStamp;
+    private String locationCode;
 
     public String getUID() {
         return UID;
@@ -56,5 +57,15 @@ public class SabreData {
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public String getLocationCode()
+    {
+        return locationCode;
+    }
+
+    public void setLocationCode(String locationCode)
+    {
+        this.locationCode = locationCode;
     }
 }
