@@ -105,7 +105,7 @@ class LatLongAction {
                 }
                 boolean isSuccessful=writeProviderLocationDataToCSVFile(locObj.getProviderData(),proLat,proLong,diffInProDataAndCorrectedProData,bwProviderDataContent,count,flag);
 
-                SabreData sabreData=getDataFromSabre(locObj.getProviderData().getLatitude(),locObj.getProviderData().getLongitude(),csvfileSabre);
+                SabreData sabreData=getDataFromSabre(locObj.getProviderData().getLatitude(),locObj.getProviderData().getLongitude(),locObj.getProviderData().getLocationCode(),locObj.getProviderData().getIataCode(),csvfileSabre);
 
                 boolean isSuccessfulSabre=writeSabreData(locObj.getProviderData(),sabreData,bwSabreDataContent,count);
 
@@ -411,10 +411,10 @@ class LatLongAction {
 
     public static String SabreFormatToString(ProviderData provider,SabreData sabreData,int id){
 
-        return id+","+sabreData.getUID()+","+sabreData.getID()+","+provider.getLocationName()+","+provider.getStreetAddress()+","+provider.getCityName()+","+sabreData.getCountryRegion()+","+provider.getStateProvinceCode()+","+provider.getCountryCode()+","+provider.getPostalCode()+","+sabreData.getGeoLevel()+","+provider.getLongitude()+","+provider.getLatitude()+","+sabreData.getPhoneticCode()+","+provider.getSupplier()+","+provider.getIataCode()+","+provider.getLocationCode()+","+sabreData.getTimeStamp();
+        return id+","+sabreData.getUID()+","+sabreData.getID()+","+provider.getLocationName()+","+provider.getStreetAddress()+","+provider.getCityName()+","+sabreData.getCountryRegion()+","+provider.getStateProvinceCode()+","+provider.getCountryCode()+","+provider.getPostalCode()+","+sabreData.getGeoLevel()+","+provider.getLongitude()+","+provider.getLatitude()+","+sabreData.getPhoneticCode()+","+provider.getSupplier()+","+provider.getIataCode()+","+sabreData.getLocationCode()+","+sabreData.getTimeStamp();
     }
 
-    public static SabreData getDataFromSabre(double providerLatitude,double providerlongitude,String csvfile) {
+    public static SabreData getDataFromSabre(double providerLatitude,double providerlongitude,String locCode, String iataCode,String csvfile) {
 
         BufferedReader reader = null;
         SabreData sabreData=new SabreData();
@@ -435,16 +435,35 @@ class LatLongAction {
                     String[] word = line.split(",");
                     String longEXcel=word[10];
                     String latEXcel=word[11];
+                    String sabLocCode = word[15];
+                    String sabIATACode = word[14];
+                    if (!sabIATACode.equals(sabLocCode))
+                    {
+                        sabLocCode = sabIATACode.concat(sabLocCode);
+                    }
+
                     double latitude=Double.parseDouble(latEXcel);
                     double longitude=Double.parseDouble(longEXcel);
-                    if(latitude==providerLatitude && longitude==providerlongitude){
-                        sabreData.setUID(word[0]);
-                        sabreData.setID(word[1]);
-                        sabreData.setCountryRegion(word[5]);
-                        sabreData.setGeoLevel(word[9]);
-                        sabreData.setPhoneticCode(word[12]);
-                        sabreData.setTimeStamp(word[16]);
-                        break;
+                    if(latitude==providerLatitude && longitude==providerlongitude)
+                    {
+//                        System.out.println(" PIATA: " + iataCode);
+//                        System.out.println(" SIATA: " + sabIATACode);
+//                        System.out.println(" PLOC: " + locCode);
+//                        System.out.println(" SLOC: " + sabLocCode);
+
+                        if (locCode.equals(sabLocCode) && sabIATACode.equals(iataCode))
+                        {
+//                            System.out.println(" <<<<<<<< MATCH >>>>>>");
+                            //based on the position of fields in the CSV file
+                            sabreData.setUID(word[0]);
+                            sabreData.setID(word[1]);
+                            sabreData.setCountryRegion(word[5]);
+                            sabreData.setGeoLevel(word[9]);
+                            sabreData.setPhoneticCode(word[12]);
+                            sabreData.setLocationCode(word[15]);
+                            sabreData.setTimeStamp(word[16]);
+                            break;
+                        }
                     }
 
                 }
